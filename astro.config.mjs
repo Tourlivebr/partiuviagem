@@ -7,5 +7,5 @@ import sitemap from '@astrojs/sitemap';
 // https://astro.build/config
 export default defineConfig({
   integrations: [mdx(), tailwind(), sitemap()],
-  site: 'https://partiuviagem.com.br', // URL de produção (ajuste conforme necessário)
+  site: 'https://www.partiuviagem.tur.br', // URL de produção
 });
