@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://partiuviagem.com.br/sitemap-index.xml

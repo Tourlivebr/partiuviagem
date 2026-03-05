@@ -7,6 +7,7 @@ export interface Props {
   image?: string;
   canonical?: string;
   noindex?: boolean;
+  keywords?: string[];
 }
 
 const {
@@ -15,12 +16,29 @@ const {
   image = '/images/logopartiuviagem.png',
   canonical,
   noindex = false,
+  keywords = [],
 } = Astro.props;
 
 // Criar URLs de forma segura
 const baseUrl = Astro.site?.toString() || 'http://localhost:4321';
 const canonicalURL = canonical || new URL(Astro.url.pathname, baseUrl).toString();
 const socialImage = new URL(image, baseUrl).toString();
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "TravelAgency",
+  "name": "Partiu Viagem",
+  "description": description,
+  "url": canonicalURL,
+  "image": socialImage,
+  "address": {
+    "@type": "PostalAddress",
+    "addressRegion": "Rio Grande do Sul",
+    "addressCountry": "BR"
+  },
+  "priceRange": "$$",
+  "telephone": "+5554999999999" // Idealmente, isso viria de uma config global
+};
 ---
 
 <!DOCTYPE html>
@@ -29,15 +47,15 @@ const socialImage = new URL(image, baseUrl).toString();
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/favicon.svg" />
-    <link rel="icon" type="image/svg+xml" sizes="32x32" href="/favicon.svg" />
-    <link rel="icon" type="image/svg+xml" sizes="16x16" href="/favicon.svg" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
     <meta name="generator" content={Astro.generator} />
     
     <!-- SEO Meta Tags -->
     <title>{title}</title>
     <meta name="description" content={description} />
+    {keywords.length > 0 && <meta name="keywords" content={keywords.join(', ')} />}
     <link rel="canonical" href={canonicalURL} />
+    <meta name="robots" content={noindex ? "noindex, nofollow" : "index, follow"} />
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
@@ -45,6 +63,8 @@ const socialImage = new URL(image, baseUrl).toString();
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={socialImage} />
+    <meta property="og:site_name" content="Partiu Viagem" />
+    <meta property="og:locale" content="pt_BR" />
     
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
@@ -62,23 +82,8 @@ const socialImage = new URL(image, baseUrl).toString();
     <link rel="preload" href="/images/logopartiuviagem.png" as="image" type="image/png" />
     
     <!-- Schema.org JSON-LD -->
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "TravelAgency",
-        "name": "Partiu Viagem",
-        "description": "{description}",
-        "url": "{canonicalURL}",
-        "image": "{socialImage}",
-        "address": {
-          "@type": "PostalAddress",
-          "addressRegion": "Rio Grande do Sul",
-          "addressCountry": "BR"
-        }
-      }
-    </script>
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
     
-    {noindex && <meta name="robots" content="noindex, nofollow" />}
     <style is:global>
       html {
         scroll-behavior: smooth;

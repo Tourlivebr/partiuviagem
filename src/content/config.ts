@@ -17,6 +17,7 @@ const destinosCollection = defineCollection({
     dateRange: z.string().optional(),
     showInCarousel: z.boolean().optional(),
     order: z.number().optional(),
+    keywords: z.array(z.string()).optional(),
   }),
 });
 
